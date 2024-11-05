@@ -1,3 +1,5 @@
+# Informaçoes Aula 03
+
 #importação do opencv-python
 import cv2
 import mediapipe as mp # importação do mediapipe para usar o facemesh
