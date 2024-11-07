@@ -7,32 +7,39 @@
 import cv2
 import mediapipe as mp # importação do mediapipe para usar o facemesh
 import numpy as np # FUNCAO EAR
-
+import time
 #importação do opencv-python
 # Pontos dos olhos
 # olho esquerdo
 p_olho_esq=[385,380,387,373,362,263]
-
 # olho direito
-p_olho_dir = [160,144,158,33,133]
+p_olho_dir = [160,144,158,153,33,133]
+p_olhos = p_olho_esq + p_olho_dir
 #FIXME: inversao Euclidiana( para dia 06/11/2024)
 # Fuçao EAR
 def calculo_ear(face,p_olho_dir,p_olho_esq):
     #FIXME:list comprehension
     #[[[]]] Lista dentro de outra lista
     try:
-        face = np.array([[coord.x,coord.y]]for coord in face)
+        face = np.array([[coord.x,coord.y]for coord in face])
+        #  matriz(Array) linhas e colunas [linhas, colunas] 
+
+
         face_esq = face[p_olho_esq, :]
         face_dir = face[p_olho_dir, :]
 
         ear_esq = (np.linalg.norm(face_esq[0] - face_esq[1]) + np.linalg.norm(face_esq[2] - face_esq[3])) / (2 * (np.linalg.norm(face_esq[4] - face_esq[5])))
         ear_dir = (np.linalg.norm(face_dir[0] - face_dir[1]) + np.linalg.norm(face_dir[2] - face_dir[3])) / (2 * (np.linalg.norm(face_dir[4] - face_dir[5])))
+        print(f"d: {ear_esq},e: {ear_dir}")
     except:
         ear_esq = 0.0
         ear_dir = 0.0
+        print("error")
     media_ear = (ear_esq + ear_dir) / 2
     return media_ear
 
+# ceiando a variavel limiar
+ear_limiar = 0.29
 
 
 #criar uma variável para camera
@@ -54,6 +61,7 @@ with mp_face_mesh.FaceMesh(min_detection_confidence=0.5, min_tracking_confidence
             print("ignorando o frame vazio da camêra")
             continue
         # transformando de BGR para RGB
+        comprimento, largura, _ = frame.shape
         frame = cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
         # criar uma variável      dados processados (ex.pontos do rosto)
         # FIXME: Processamento do frame(saide_facemesh e o frame processado)
@@ -77,19 +85,59 @@ with mp_face_mesh.FaceMesh(min_detection_confidence=0.5, min_tracking_confidence
                 # o nosso (frame)
                 # as coordenadas - (face_landmarks)
                 # Especificar os nossos pontos : FACEMESH_CONTOURS
-                mp_drawing.draw_landmarks(frame,
-                                            face_landmarks,
-                                            mp_face_mesh.FACEMESH_CONTOURS,
-                                            landmarks_drawing_spec = mp_drawing.DrawingSpec(color=(255,102,102),thickness=1,circle_radius=1),
-                                            Connection_drawing_spec= mp_drawing.DrawingSpec(color=(102,204,0),thickness=1,circle_radius=1)
-                                        )
+                mp_drawing.draw_landmarks(frame, 
+                                          face_landmarks, 
+                                          mp_face_mesh.FACEMESH_CONTOURS,
+                                          landmark_drawing_spec = mp_drawing.DrawingSpec(color=(255,102,102),thickness=1, circle_radius=1),
+                                          connection_drawing_spec = mp_drawing.DrawingSpec(color=(102,204,0),thickness=1, circle_radius=1)
+                                          )
             #FIXME: normalizacao para pixel
+                face = face_landmarks.landmark
+                for id_coord, coord_xyz in enumerate(face):
+                    if id_coord in p_olhos:
+                        coord_cv = mp_drawing._normalized_to_pixel_coordinates(coord_xyz.x,coord_xyz.y,largura,comprimento)
+                        cv2.circle(frame,coord_cv,2,(255,0,0),-1)
+
+                 #FIXME: chamada de EAR e print
+                ear = calculo_ear(face,p_olho_dir,p_olho_esq)
+                 # mostrando o EAR na tela
+                 # Criando um retangulo cinza sólido(-1)
+                cv2.rectangle(frame, (0,1),(290,140),(58,58,55),-1)
+                 #mostro os valores no frame
+                cv2.putText(frame, f"EAR: {round(ear, 2)}", (1, 24),
+                                cv2.FONT_HERSHEY_DUPLEX,
+                                0.9, (255, 255, 255), 2)
+
+                 # verificação da limiar
+                if ear < ear_limiar:
+                    t_inicial = time.time() if dormindo == 0 else t_inicial
+                    dormindo = 1
+                if dormindo == 1 and ear >= ear_limiar:
+                    dormindo = 0
+                t_final = time.time()
+                            
+                tempo = (t_final-t_inicial) if dormindo == 1 else 0.0
+                cv2.putText(frame, f"Tempo: {round(tempo, 3)}", (1, 80),
+                                        cv2.FONT_HERSHEY_DUPLEX,
+                                        0.9, (255, 255, 255), 2)
+                if tempo>=1.5:
+                    cv2.rectangle(frame, (30, 400), (610, 452), (109, 233, 219), -1)
+                    cv2.putText(frame, f"Muito tempo com olhos fechados!", (80, 435),
+                                    cv2.FONT_HERSHEY_DUPLEX,
+                                    0.85, (58,58,55), 1)
+
+
+
         except:
             print("algo deu errado")
+
         finally:
-            print("encerrando o processoo")    
+            print("encerrando o processoo")  
+
         # carregar nosso frame - com título
+
         cv2.imshow('Camera',frame)
+
         # Estude sobre bitwise
         # Estude sobre tabela ASC II estendida
         # ord() - retorna o valor Unicode (ou ASC II) 
@@ -103,7 +151,47 @@ cap.release()
 cv2.destroyAllWindows()
 
 
-#  O que e o ponto?
+# O que é o ponto?
 # Que coordenadas corresponde a tal ponto?
 # Ids dos Pontos sao
 # O..........................................467
+
+
+
+
+## Exercicio de casa
+# Considerando o algoritimo do tempo e a blioteca time
+# Explique a linha (logica)
+# Envie para o email( instrutor.romulo@gmail.com)
+#  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
