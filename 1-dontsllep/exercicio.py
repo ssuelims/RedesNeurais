@@ -15,6 +15,7 @@ p_olho_esq=[385,380,387,373,362,263]
 # olho direito
 p_olho_dir = [160,144,158,153,33,133]
 p_olhos = p_olho_esq + p_olho_dir
+p_boca = [82, 87, 13, 14, 312, 317, 78, 308]
 #FIXME: inversao Euclidiana( para dia 06/11/2024)
 # Fuçao EAR
 def calculo_ear(face,p_olho_dir,p_olho_esq):
@@ -173,30 +174,3 @@ cv2.destroyAllWindows()
 
 # verifando pontos da boca
 # precisando verificar abertura da boca ,porque quase niguem dorme sorrindo ou gargalhando.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
