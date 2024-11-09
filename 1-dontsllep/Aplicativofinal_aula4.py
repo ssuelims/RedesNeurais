@@ -159,7 +159,7 @@ cv2.destroyAllWindows()
 
 
 
-## Exercicio de casa
+# Exercicio de casa
 # Considerando o algoritimo do tempo e a blioteca time
 # Explique a linha (logica)
 # Envie para o email( instrutor.romulo@gmail.com)
