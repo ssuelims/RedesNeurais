@@ -14,12 +14,13 @@ import pygame
 pygame.mixer.init()
 # carregar o arquivo de som
 pygame.mixer.music.load("C:/Users/maria/Downloads/atualizacoes/RedesNeurais/1-dontsllep/Som da Ave Kiwi.mp3")
-
+mar_limiar = 0.5 # Ajuste
 som_tocando = False
+def calcular_mar():# Calculos dos pontos para determinar abertura da Boca
 
+    return mar # retorna o valor calculado de mar
 
-
-#importação do opencv-python
+#importação do o calcular_marpencv-python
 # Pontos dos olhos
 # olho esquerdo
 p_olho_esq=[385,380,387,373,362,263]
@@ -93,11 +94,10 @@ with mp_face_mesh.FaceMesh(min_detection_confidence=0.5, min_tracking_confidence
         saida_facemesh = facemesh.process(frame)
         # O OpenCV - entende BGR
         frame = cv2.cvtColor(frame,cv2.COLOR_RGB2BGR)
-
+        
         if saida_facemesh.multi_face_landmarks:
             print("detectar Boca aberta")
 
-            
             if not som_tocando:
                 pygame.mixer.music.play(-1)  # Toca continuamente
                 som_tocando = True  # Atualiza o estado para som tocando
@@ -106,7 +106,8 @@ with mp_face_mesh.FaceMesh(min_detection_confidence=0.5, min_tracking_confidence
             if som_tocando:
                 pygame.mixer.music.stop()  # Para o som
                 som_tocando = False  # Atualiza o estado para som parado
-        
+        time.sleep(0.1) 
+
         # O try - tratando o erro de ausência de usuário em frente a camera
         try: 
             #mostrar os pontos, mostrar a detecção que o MediaPipe fez
