@@ -13,7 +13,7 @@ import pygame
 # Inicializando mix de audio
 pygame.mixer.init()
 # carregar o arquivo de som
-pygame.mixer.music.load("C:/Users/maria/Downloads/atualizacoes/RedesNeurais/1-dontsllep/Som da Ave Kiwi.mp3")
+pygame.mixer.music.load("C:/Users/ead/Documents/Sueli/REDESNEURAIS/1-dontsllep/Som da Ave Kiwi.mp3")
 mar_limiar = 0.5 # Ajuste
 som_tocando = False # variavel para controlar se o som esta tocando
 def calcular_mar():# Calculos dos pontos para determinar abertura da Boca
