@@ -128,6 +128,7 @@ with mp_face_mesh.FaceMesh(min_detection_confidence=0.5, min_tracking_confidence
                 cv2.putText(frame, f"Tempo: {round(tempo, 3)}", (1, 80),
                             cv2.FONT_HERSHEY_DUPLEX,
                             0.9, (255, 255, 255), 2)
+                
                 if tempo >= 1.5:
                     cv2.rectangle(frame, (30, 400), (610, 452), (109, 233, 219), -1)
                     cv2.putText(frame, f"Muito tempo com olhos fechados!", (80, 435),
